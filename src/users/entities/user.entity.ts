@@ -1,16 +1,17 @@
 import {
   Column,
+  Entity,
+  PrimaryGeneratedColumn,
   CreateDateColumn,
   DeleteDateColumn,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
-
+@Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column('text', { nullable: false })
-  fulName: string;
+  fullName: string;
 
   @Column('text', { nullable: false })
   dni: string;
