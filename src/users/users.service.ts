@@ -93,8 +93,8 @@ export class UsersService {
   }
 
   private handleDbException(error: any) {
-    if (error.code === '23505') {
-      throw new BadRequestException(error.detail);
+    if (error.errno === 1062) {
+      throw new BadRequestException(error.sqlMessage);
     }
 
     this.logger.error(error);
