@@ -1,5 +1,12 @@
-import { Transform } from 'class-transformer';
-import { IsEmail, IsString, MinLength } from 'class-validator';
+import {
+  IsArray,
+  IsEmail,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class RegisterAuthDto {
   @IsString()
@@ -15,7 +22,11 @@ export class RegisterAuthDto {
 
   @IsString()
   @MinLength(6)
-  @Transform(({ value }) => value.trim())
+  @MaxLength(50)
+  @Matches(/(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    message:
+      'The password must have a Uppercase, lowercase letter and a number',
+  })
   password: string;
 
   @IsString()
@@ -30,6 +41,8 @@ export class RegisterAuthDto {
   @IsString()
   longitude: string;
 
-  @IsString()
-  rol: string;
+  @IsString({ each: true })
+  @IsArray()
+  @IsOptional()
+  rol: string[];
 }

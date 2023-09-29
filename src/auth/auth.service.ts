@@ -1,65 +1,77 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
-import * as bcryptjs from 'bcryptjs';
+import { User } from './entities/user.entity';
 
-import { UsersService } from 'src/users/users.service';
-
-import { LoginAuthDto } from './dto/login-auth.dto.';
-import { RegisterAuthDto } from './dto/register-auth.dto';
+import { LoginUserDto, RegisterAuthDto } from './dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersService: UsersService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(newUser: RegisterAuthDto) {
-    const user = await this.usersService.findOne(newUser.email);
+  async register(registerUserDto: RegisterAuthDto) {
+    try {
+      const { password, ...restUser } = registerUserDto;
 
-    if (user) {
-      throw new BadRequestException('This email is already in use');
+      const user = this.userRepository.create({
+        ...restUser,
+        password: bcrypt.hashSync(password, 10),
+      });
+
+      await this.userRepository.save(user);
+      delete user.password;
+
+      return {
+        ...user,
+        // token: this.getJwtToken({ id: user.id }),
+      };
+    } catch (error) {
+      this.handleDbErrors(error);
     }
+  }
 
-    const hashPassword = await bcryptjs.hash(newUser.password, 10);
+  async login(loginUserDto: LoginUserDto) {
+    const { email, password } = loginUserDto;
 
-    await this.usersService.create({
-      ...newUser,
-      password: hashPassword,
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: { email: true, password: true, id: true },
     });
 
+    if (!user) {
+      throw new UnauthorizedException('Credentials are not valid (email)');
+    }
+
+    // Comparar la contraseña
+    if (!bcrypt.compareSync(password, user.password)) {
+      throw new UnauthorizedException('Credentials are not valid (password)');
+    }
+
+    delete user.password;
+
     return {
-      msg: 'User created successfully',
+      ...user,
+      // token: this.getJwtToken({ id: user.id }),
     };
   }
 
-  async login(user: LoginAuthDto) {
-    const existUser = await this.usersService.findOne(user.email);
-
-    if (!existUser) {
-      throw new UnauthorizedException('Invalid email');
+  private handleDbErrors(error: any): never {
+    if (error.code === '23505') {
+      throw new BadRequestException(error.detail);
     }
 
-    const isPasswordValid = await bcryptjs.compare(
-      user.password,
-      existUser.password,
-    );
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid password');
-    }
-
-    const payload = { email: user.email };
-    const token = await this.jwtService.signAsync(payload);
-
-    return {
-      token: token,
-      email: user.email,
-    };
+    throw new InternalServerErrorException('Please check server logs');
   }
 }
