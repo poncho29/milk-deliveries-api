@@ -44,5 +44,5 @@ export class RegisterAuthDto {
   @IsString({ each: true })
   @IsArray()
   @IsOptional()
-  rol: string[];
+  roles: string[];
 }
