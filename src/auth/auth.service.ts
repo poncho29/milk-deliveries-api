@@ -13,6 +13,8 @@ import { User } from './entities/user.entity';
 
 import { LoginUserDto, RegisterAuthDto } from './dto';
 
+import { JwtPayload } from './interfaces/jwt-payload.interface';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -35,7 +37,7 @@ export class AuthService {
 
       return {
         ...user,
-        // token: this.getJwtToken({ id: user.id }),
+        token: this.getJwtToken({ id: user.id }),
       };
     } catch (error) {
       this.handleDbErrors(error);
@@ -63,8 +65,13 @@ export class AuthService {
 
     return {
       ...user,
-      // token: this.getJwtToken({ id: user.id }),
+      token: this.getJwtToken({ id: user.id }),
     };
+  }
+
+  private getJwtToken(payload: JwtPayload) {
+    const token = this.jwtService.sign(payload);
+    return token;
   }
 
   private handleDbErrors(error: any): never {
