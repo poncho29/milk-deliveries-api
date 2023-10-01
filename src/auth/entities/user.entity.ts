@@ -6,6 +6,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { Delivery } from '../../deliveries/entities/delivery.entity';
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -45,6 +47,8 @@ export class User {
     default: true,
   })
   isActive: boolean;
+
+  deliveries: Delivery;
 
   @BeforeInsert()
   checkFieldBeforeInsert() {

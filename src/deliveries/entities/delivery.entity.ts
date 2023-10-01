@@ -1,3 +1,4 @@
+import { User } from 'src/auth/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -13,6 +14,10 @@ export class Delivery {
 
   @Column('float', { default: 0 })
   quantity: number;
+
+  customer: User;
+
+  employee: User;
 
   @CreateDateColumn()
   createDate: Date;
