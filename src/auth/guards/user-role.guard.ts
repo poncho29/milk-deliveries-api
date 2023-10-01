@@ -8,6 +8,8 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
+import { META_ROLES } from '../decorators';
+
 @Injectable()
 export class UserRoleGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
@@ -16,7 +18,7 @@ export class UserRoleGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     // Obtiene los roles
     const validRoles: string[] = this.reflector.get(
-      'roles',
+      META_ROLES,
       context.getHandler(),
     );
 
