@@ -12,6 +12,9 @@ export class User {
   id: string;
 
   @Column('text', { unique: true })
+  fullName: string;
+
+  @Column('text', { unique: true })
   dni: string;
 
   @Column('text', { unique: true })
