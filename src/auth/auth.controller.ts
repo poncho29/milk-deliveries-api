@@ -5,13 +5,15 @@ import {
   Get,
   ParseUUIDPipe,
   Param,
+  Query,
 } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 
-import { LoginUserDto, RegisterAuthDto } from './dto';
-
 import { User } from './entities/user.entity';
+
+import { LoginUserDto, RegisterAuthDto } from './dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 import { Auth, GetUser } from './decorators';
 
@@ -29,6 +31,12 @@ export class AuthController {
   @Post('login')
   login(@Body() loginUserDto: LoginUserDto) {
     return this.authService.login(loginUserDto);
+  }
+
+  @Get()
+  @Auth(ValidRoles.superadmin, ValidRoles.admin, ValidRoles.employee)
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.authService.findAll(paginationDto);
   }
 
   @Get(':id')

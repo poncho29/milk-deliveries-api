@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 
 import { LoginUserDto, RegisterAuthDto } from './dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 
@@ -68,6 +69,15 @@ export class AuthService {
       ...user,
       token: this.getJwtToken({ id: user.id }),
     };
+  }
+
+  async findAll(paginationDto: PaginationDto) {
+    const { limit = 10, offset = 0 } = paginationDto;
+
+    return await this.userRepository.find({
+      take: limit,
+      skip: offset,
+    });
   }
 
   async findOne(id: string) {
