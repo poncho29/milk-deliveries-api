@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -15,8 +16,16 @@ export class Delivery {
   @Column('float', { default: 0 })
   quantity: number;
 
+  @ManyToOne(() => User, (customer) => customer.deliveries, {
+    onDelete: 'CASCADE',
+    // eager: true,
+  })
   customer: User;
 
+  @ManyToOne(() => User, (employee) => employee.deliveries, {
+    onDelete: 'CASCADE',
+    // eager: true,
+  })
   employee: User;
 
   @CreateDateColumn()

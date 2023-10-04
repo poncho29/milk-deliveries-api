@@ -8,11 +8,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
 
+import { User } from '../auth/entities/user.entity';
 import { Delivery } from './entities/delivery.entity';
+
+import { AuthService } from '../auth/auth.service';
 
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class DeliveriesService {
@@ -21,11 +24,21 @@ export class DeliveriesService {
   constructor(
     @InjectRepository(Delivery)
     private readonly deliveryRepository: Repository<Delivery>,
+
+    private readonly authService: AuthService,
   ) {}
 
-  async create(createDeliveryDto: CreateDeliveryDto) {
+  async create(createDeliveryDto: CreateDeliveryDto, user: User) {
     try {
-      const delivery = this.deliveryRepository.create(createDeliveryDto);
+      const { customerId, ...rest } = createDeliveryDto;
+
+      const customer = await this.authService.findOne(customerId);
+
+      const delivery = this.deliveryRepository.create({
+        ...rest,
+        customer,
+        employee: user,
+      });
 
       await this.deliveryRepository.save(delivery);
 
@@ -52,10 +65,16 @@ export class DeliveriesService {
     return delivery;
   }
 
-  async update(id: string, updateDeliveryDto: UpdateDeliveryDto) {
+  async update(id: string, updateDeliveryDto: UpdateDeliveryDto, user: User) {
+    const { customerId, ...rest } = updateDeliveryDto;
+
+    const customer = await this.authService.findOne(customerId);
+
     const delivery = await this.deliveryRepository.preload({
       id,
-      ...updateDeliveryDto,
+      ...rest,
+      customer,
+      employee: user,
     });
 
     if (!delivery) throw new NotFoundException('Delivery not found');

@@ -1,4 +1,11 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  ParseUUIDPipe,
+  Param,
+} from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 
@@ -22,6 +29,12 @@ export class AuthController {
   @Post('login')
   login(@Body() loginUserDto: LoginUserDto) {
     return this.authService.login(loginUserDto);
+  }
+
+  @Get(':id')
+  @Auth(ValidRoles.superadmin, ValidRoles.admin, ValidRoles.employee)
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.authService.findOne(id);
   }
 
   @Get('private')

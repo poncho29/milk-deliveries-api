@@ -3,6 +3,7 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -48,7 +49,11 @@ export class User {
   })
   isActive: boolean;
 
-  deliveries: Delivery;
+  @OneToMany(() => Delivery, (delivery) => delivery.employee, {
+    cascade: true,
+    eager: true,
+  })
+  deliveries: Delivery[];
 
   @BeforeInsert()
   checkFieldBeforeInsert() {

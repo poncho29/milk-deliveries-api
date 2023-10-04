@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -67,6 +68,14 @@ export class AuthService {
       ...user,
       token: this.getJwtToken({ id: user.id }),
     };
+  }
+
+  async findOne(id: string) {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    return user;
   }
 
   private getJwtToken(payload: JwtPayload) {
