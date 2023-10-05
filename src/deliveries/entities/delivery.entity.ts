@@ -16,15 +16,15 @@ export class Delivery {
   @Column('float', { default: 0 })
   quantity: number;
 
-  @ManyToOne(() => User, (customer) => customer.deliveries, {
+  @ManyToOne(() => User, (customer) => customer.deliveriesCustomer, {
     onDelete: 'CASCADE',
-    // eager: true,
+    eager: true,
   })
   customer: User;
 
-  @ManyToOne(() => User, (employee) => employee.deliveries, {
+  @ManyToOne(() => User, (employee) => employee.deliveriesEmployee, {
     onDelete: 'CASCADE',
-    // eager: true,
+    eager: true,
   })
   employee: User;
 

@@ -49,11 +49,15 @@ export class User {
   })
   isActive: boolean;
 
+  @OneToMany(() => Delivery, (delivery) => delivery.customer, {
+    cascade: true,
+  })
+  deliveriesCustomer: Delivery[];
+
   @OneToMany(() => Delivery, (delivery) => delivery.employee, {
     cascade: true,
-    eager: true,
   })
-  deliveries: Delivery[];
+  deliveriesEmployee: Delivery[];
 
   @BeforeInsert()
   checkFieldBeforeInsert() {

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -12,20 +13,27 @@ import * as bcrypt from 'bcrypt';
 
 import { User } from './entities/user.entity';
 
-import { LoginUserDto, RegisterAuthDto } from './dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import {
+  LoginUserDto,
+  RegisterUserDto,
+  UpdatePasswordDto,
+  UpdateUserDto,
+} from './dto';
 
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(registerUserDto: RegisterAuthDto) {
+  async register(registerUserDto: RegisterUserDto) {
     try {
       const { password, ...restUser } = registerUserDto;
 
@@ -81,11 +89,66 @@ export class AuthService {
   }
 
   async findOne(id: string) {
-    const user = await this.userRepository.findOneBy({ id });
+    const user = await this.userRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        deliveriesCustomer: true,
+      },
+    });
 
     if (!user) throw new NotFoundException('User not found');
 
     return user;
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    await this.findOne(id);
+    delete updateUserDto.password;
+
+    const user = await this.userRepository.preload({
+      id,
+      ...updateUserDto,
+    });
+
+    try {
+      await this.userRepository.save(user);
+      return user;
+    } catch (error) {
+      this.handleDbErrors(error);
+    }
+  }
+
+  async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: { password: true },
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    const { password, newPassword } = updatePasswordDto;
+
+    if (!bcrypt.compareSync(password, user.password)) {
+      throw new UnauthorizedException('Credentials are not valid (password)');
+    }
+
+    try {
+      const userEdit = await this.userRepository.preload({
+        id,
+        ...user,
+        password: bcrypt.hashSync(newPassword, 10),
+      });
+
+      await this.userRepository.save(userEdit);
+
+      return {
+        message: 'password updated successfully',
+      };
+    } catch (error) {
+      this.handleDbErrors(error);
+    }
   }
 
   private getJwtToken(payload: JwtPayload) {
@@ -98,6 +161,7 @@ export class AuthService {
       throw new BadRequestException(error.detail);
     }
 
+    this.logger.error(error);
     throw new InternalServerErrorException('Please check server logs');
   }
 }

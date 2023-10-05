@@ -6,16 +6,20 @@ import {
   ParseUUIDPipe,
   Param,
   Query,
+  Patch,
 } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 
-import { User } from './entities/user.entity';
-
-import { LoginUserDto, RegisterAuthDto } from './dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import {
+  LoginUserDto,
+  RegisterUserDto,
+  UpdatePasswordDto,
+  UpdateUserDto,
+} from './dto';
 
-import { Auth, GetUser } from './decorators';
+import { Auth } from './decorators';
 
 import { ValidRoles } from './interfaces';
 
@@ -24,8 +28,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  register(@Body() registerAuthDto: RegisterAuthDto) {
-    return this.authService.register(registerAuthDto);
+  register(@Body() registerUserDto: RegisterUserDto) {
+    return this.authService.register(registerUserDto);
   }
 
   @Post('login')
@@ -45,12 +49,21 @@ export class AuthController {
     return this.authService.findOne(id);
   }
 
-  @Get('private')
-  @Auth(ValidRoles.user)
-  getPrivateRoute2(@GetUser() user: User) {
-    return {
-      ok: true,
-      user,
-    };
+  @Patch(':id')
+  @Auth(ValidRoles.superadmin, ValidRoles.admin, ValidRoles.employee)
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.authService.update(id, updateUserDto);
+  }
+
+  @Patch('update-password/:id')
+  @Auth(ValidRoles.superadmin, ValidRoles.admin, ValidRoles.employee)
+  updatePassword(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ) {
+    return this.authService.updatePassword(id, updatePasswordDto);
   }
 }
