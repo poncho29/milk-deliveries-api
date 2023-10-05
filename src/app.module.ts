@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { DeliveriesModule } from './deliveries/deliveries.module';
+import { LocationsModule } from './locations/locations.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -21,6 +22,7 @@ import { DeliveriesModule } from './deliveries/deliveries.module';
     CommonModule,
     AuthModule,
     DeliveriesModule,
+    LocationsModule,
   ],
   controllers: [],
   providers: [],
