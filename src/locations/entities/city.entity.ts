@@ -1,10 +1,16 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { State } from './state.entity';
 
 @Entity()
 export class City {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryColumn()
+  id: number;
 
   @Column()
   name: string;
+
+  @ManyToOne(() => State, (state) => state.city, {
+    onDelete: 'CASCADE',
+  })
+  state: State;
 }

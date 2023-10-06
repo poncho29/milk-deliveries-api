@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query } from '@nestjs/common';
 
 import { LocationsService } from './locations.service';
 
@@ -16,5 +16,10 @@ export class LocationsController {
   @Get('cities')
   findAllCities(@Query() paginationDto: PaginationDto) {
     return this.locationsService.findAllCities(paginationDto);
+  }
+
+  @Post('seed')
+  SeedLocation() {
+    return this.locationsService.seed();
   }
 }

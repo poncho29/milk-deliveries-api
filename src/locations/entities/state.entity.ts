@@ -1,10 +1,16 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { City } from './city.entity';
 
 @Entity()
 export class State {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryColumn()
+  id: number;
 
   @Column()
   name: string;
+
+  @OneToMany(() => City, (city) => city.state, {
+    cascade: true,
+  })
+  city: City;
 }
