@@ -13,6 +13,6 @@ import { AuthService } from 'src/auth/auth.service';
   controllers: [DeliveriesController],
   providers: [DeliveriesService, AuthService],
   imports: [TypeOrmModule.forFeature([Delivery]), AuthModule],
-  exports: [TypeOrmModule, DeliveriesService],
+  exports: [TypeOrmModule],
 })
 export class DeliveriesModule {}

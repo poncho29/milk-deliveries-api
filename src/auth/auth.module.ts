@@ -11,8 +11,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 import { User } from './entities/user.entity';
 
-// import { jwtConstants } from './constants/jwt.constant';
-
 @Module({
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

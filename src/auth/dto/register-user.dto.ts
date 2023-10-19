@@ -41,6 +41,9 @@ export class RegisterUserDto {
   @IsString()
   longitude: string;
 
+  @IsString()
+  cityId: string;
+
   @IsString({ each: true })
   @IsArray()
   @IsOptional()

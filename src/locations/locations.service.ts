@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
@@ -25,13 +29,21 @@ export class LocationsService {
     private readonly stateRepository: Repository<State>,
   ) {}
 
-  async findAllCities(paginationDto: PaginationDto) {
+  async findAllCities(paginationDto?: PaginationDto) {
     const { limit = 10, offset = 0 } = paginationDto;
 
     return await this.cityRepository.find({
       take: limit,
       skip: offset,
     });
+  }
+
+  async findOne(id: number) {
+    const city = this.cityRepository.findOneBy({ id });
+
+    if (!city) throw new NotFoundException('City not found');
+
+    return city;
   }
 
   async findAllStates(paginationDto: PaginationDto) {
