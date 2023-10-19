@@ -11,6 +11,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 import { User } from './entities/user.entity';
 
+import { LocationsModule } from '../locations/locations.module';
+
 @Module({
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
@@ -30,6 +32,7 @@ import { User } from './entities/user.entity';
         };
       },
     }),
+    LocationsModule,
   ],
   exports: [TypeOrmModule, JwtModule, JwtStrategy, PassportModule],
 })

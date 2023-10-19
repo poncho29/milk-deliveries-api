@@ -10,6 +10,6 @@ import { City, State } from './entities';
   controllers: [LocationsController],
   providers: [LocationsService],
   imports: [TypeOrmModule.forFeature([State, City])],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, LocationsService],
 })
 export class LocationsModule {}
