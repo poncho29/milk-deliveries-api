@@ -23,8 +23,6 @@ import {
 
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 
-import { LocationsService } from 'src/locations/locations.service';
-
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -33,17 +31,12 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
-    // private readonly locationService: LocationsService,
-
     private readonly jwtService: JwtService,
   ) {}
 
   async register(registerUserDto: RegisterUserDto) {
     try {
-      const { password, cityId, ...restUser } = registerUserDto;
-
-      // const city = await this.locationService.findOne(+cityId);
-      // console.log(city);
+      const { password, ...restUser } = registerUserDto;
 
       const user = this.userRepository.create({
         ...restUser,

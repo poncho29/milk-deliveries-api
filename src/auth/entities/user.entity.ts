@@ -3,14 +3,11 @@ import {
   BeforeUpdate,
   Column,
   Entity,
-  JoinColumn,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { Delivery } from '../../deliveries/entities/delivery.entity';
-import { City } from '../../locations/entities';
 
 @Entity('users')
 export class User {
@@ -41,6 +38,12 @@ export class User {
   @Column('text')
   longitude: string;
 
+  @Column('text')
+  city: string;
+
+  @Column('text')
+  department: string;
+
   @Column('text', {
     array: true,
     default: ['user'],
@@ -51,10 +54,6 @@ export class User {
     default: true,
   })
   isActive: boolean;
-
-  @OneToOne(() => City)
-  @JoinColumn()
-  city: City;
 
   @OneToMany(() => Delivery, (delivery) => delivery.customer, {
     cascade: true,

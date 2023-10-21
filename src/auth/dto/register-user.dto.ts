@@ -42,7 +42,10 @@ export class RegisterUserDto {
   longitude: string;
 
   @IsString()
-  cityId: string;
+  city: string;
+
+  @IsString()
+  department: string;
 
   @IsString({ each: true })
   @IsArray()
