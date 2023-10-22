@@ -8,6 +8,7 @@ import {
   Query,
   Patch,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
 
@@ -21,13 +22,23 @@ import {
 
 import { Auth } from './decorators';
 
+import { User } from './entities/user.entity';
+
 import { ValidRoles } from './interfaces';
 
+@ApiBearerAuth()
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @ApiResponse({
+    status: 201,
+    description: 'User was created',
+    type: User,
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
   register(@Body() registerUserDto: RegisterUserDto) {
     return this.authService.register(registerUserDto);
   }
