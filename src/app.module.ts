@@ -20,7 +20,7 @@ import { DeliveriesModule } from './deliveries/deliveries.module';
       synchronize: true, // Only development,
       ssl: process.env.SSL === 'true',
       extra: {
-        ssl: process.env.SSl === 'true' ? { rejectUnauthorized: false } : null,
+        ssl: process.env.SSL === 'true' ? { rejectUnauthorized: false } : null,
       },
     }),
     CommonModule,
