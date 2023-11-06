@@ -9,7 +9,6 @@ import {
   Query,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { DeliveriesService } from './deliveries.service';
 
@@ -20,24 +19,15 @@ import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
 
 import { User } from '../auth/entities/user.entity';
-import { Delivery } from './entities/delivery.entity';
 
 import { ValidRoles } from '../auth/interfaces';
-@ApiBearerAuth()
-@ApiTags('Deliveries')
+
 @Controller('deliveries')
 export class DeliveriesController {
   constructor(private readonly deliveriesService: DeliveriesService) {}
 
   @Post()
   @Auth(ValidRoles.superadmin, ValidRoles.admin, ValidRoles.employee)
-  @ApiResponse({
-    status: 201,
-    description: 'Delivery was created',
-    type: Delivery,
-  })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiResponse({ status: 403, description: 'Forbidden. Token related' })
   create(@Body() createDeliveryDto: CreateDeliveryDto, @GetUser() user: User) {
     return this.deliveriesService.create(createDeliveryDto, user);
   }
