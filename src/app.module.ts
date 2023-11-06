@@ -17,7 +17,11 @@ import { DeliveriesModule } from './deliveries/deliveries.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       autoLoadEntities: true,
-      synchronize: true, // Only development
+      synchronize: true, // Only development,
+      ssl: process.env.SSL === 'true',
+      extra: {
+        ssl: process.env.SSl === 'true' ? { rejectUnauthorized: false } : null,
+      },
     }),
     CommonModule,
     AuthModule,
