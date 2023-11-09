@@ -21,8 +21,6 @@ import {
 
 import { Auth } from './decorators';
 
-import { User } from './entities/user.entity';
-
 import { ValidRoles } from './interfaces';
 
 @Controller('auth')
